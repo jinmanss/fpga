@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps   // 1나노초로 단위시간을 정하고 1피코초의 해상도 입니다.
 
 
-module tb_adder(); // 특정 기능 
+module tb_adder(); // 특정 기능을 하는 함수같은 구문
 
 /* DUT 인터페이스 */
 logic  	[7:0] a,b; 
@@ -63,7 +63,7 @@ carry_ripple_adder dut(
 /************************************** 
 *		      테스트 진행
 ***************************************/
-initial begin
+initial begin   // 0ns에 시작되는 구문
 	$display("*************  Starting Test  **************");
 
 	/* 변수 초기화 */
@@ -102,10 +102,10 @@ initial begin
 	end
 
 	$display("\nSuccess: %0d\nFail:%0d\n", cnt_success, cnt_fail);
-	$finish();
-end
+	$finish();      
+end    
 
 
 
 
-endmodule
+endmodule   // 모듈이 끝났다는 구문 
