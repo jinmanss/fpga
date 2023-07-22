@@ -1,10 +1,10 @@
 module gray_decoder(
-	input [7:0] gray,
-	output reg [7:0] bin
+	input [7:0] gray,     // 입력으로 8비트 그레이코드를 선언
+	output reg [7:0] bin  // 출력으로 8비트 바이너리코드를 선언
 );
 
 
-always_comb begin
+always_comb begin             
 	for (int i = 7; i >= 0; i--) begin
 		if (i == 7)
 			bin[i] = gray[i];
