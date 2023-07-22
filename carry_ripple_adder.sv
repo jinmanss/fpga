@@ -18,10 +18,10 @@ module carry_ripple_adder (                         // 캐리리플가산기 모
 
 
 generate                                           // 반복문을 생성하는 구문
-	wire [8:0] carry;                          // carry를 8비트로 선언
+	wire [8:0] carry;                          // carry를 9비트로 선언(캐리는 올림수이므로)
 
 	assign carry[0] = cin;                     // carry의 0비트에는 carry in 이다.
-	assign cout = carry[8];                    // carry out에는 carry의 8번째 비트이다.
+	assign cout = carry[8];                    // carry out에는 carry의 9번째 비트이다(올림수?이므로)
 
 	for (genvar i = 0; i < 8; i++) begin      // for genvar를 통해서 전가산기를 설정
 		full_adder fa_inst(
