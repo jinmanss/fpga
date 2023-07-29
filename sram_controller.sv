@@ -9,19 +9,17 @@ module sram_controller(
 );
 
 logic  [7:0] data;
-
-
+logic  [7:0] data_out;
 enum logic [2:0] {
     RESET, READY, WRITE, READ, DONE
 }state, next_state;
 
-logic [7:0] data;
 logic [2:0] wr_idx;
 logic [2:0] re_idx;
 logic [7:0] data_out;
-assign data = tri_sel ? data_out : 8'bz;     // tri_selÀÌ highÀÌ¸é data¿¡ data_outÀ» ³Ö°í low¸é data¿¡ 8'bz¶ó´Â ÇÏÀÌ ÀÓÇÇ´ø½º¸¦ ³Ö¾î Ãâ·ÂÀÌ ¾ÈµÇ°Ô ÇÑ´Ù?.
+assign data = tri_sel ? data_out : 8'bz;     // tri_selì´ highì´ë©´ dataì— data_outì„ ë„£ê³  lowë©´ dataì— 8'bzë¼ëŠ” í•˜ì´ ì„í”¼ë˜ìŠ¤ë¥¼ ë„£ì–´ ì¶œë ¥ì´ ì•ˆë˜ê²Œ í•œë‹¤?.
 
-// ¼­ºê ¸ğµâ 
+// ì„œë¸Œ ëª¨ë“ˆ 
 mmcm_50m mmcm (
     .reset(1'b0)
    ,.clk_in1(clk)
@@ -30,7 +28,7 @@ mmcm_50m mmcm (
 );
 
 
-/* ·ÎÁ÷ ¾Æ³¯¶óÀÌÀú */
+/* ë¡œì§ ì•„ë‚ ë¼ì´ì € */
 ila_sram_ctrl ila(
     .clk      (mclk)
    ,.probe0    (rst_n)
@@ -45,7 +43,7 @@ ila_sram_ctrl ila(
 );
 
 
-/* °¡»ó ÀÔÃâ·Â */
+/* ê°€ìƒ ì…ì¶œë ¥ */
 vio_0 vio(
     .clk    (mclk)
    ,.probe_out0 (rst_n)
@@ -66,14 +64,14 @@ always_comb begin
     RESET: next_state = READY;
     
     READY: begin
-           if(( tri_sel = 1) && (wr_idx < 10)) 
+	    if(wr_idx < 10) 
                 next_state = WRITE;
-           else if(( tri_sel = 0) && (re_idx < 10))
-                next_state = READY;
+	    else if(re_idx < 10)
+                next_state = READ;
            end  
     WRITE: begin
            if(wr_idx <= 10)
-           tri_sel = 0; 
+           tri_sel = 1; 
            next_state = READY;
            end
     READ:  begin 
@@ -92,9 +90,9 @@ always_ff @(posedge clk or negedge rst_n) begin
     oe_n <= 1;
     ce_n <= 1;
     we_n <= 1;
-    tri_sel = 0;
-    wr_idx 	<= 0;
-	re_idx 	<= 0;
+    tri_sel <= 0;
+    wr_idx  <= 0;
+    re_idx  <= 0;
     
     case(next_state)                
     WRITE: begin
