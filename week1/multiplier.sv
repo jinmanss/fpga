@@ -1,7 +1,7 @@
 /***************************************
-*   Multiplier ¸ğµâ
+*   Multiplier ëª¨ë“ˆ
 *
-*   ±â´É: a * b = product
+*   ê¸°ëŠ¥: a * b = product
 ****************************************/
 
 
@@ -20,7 +20,7 @@ module multiplier #(
 
 
     generate
-        /* colÀº ¼¼·Î À§Ä¡, row´Â °¡·Î À§Ä¡ */
+        /* colì€ ì„¸ë¡œ ìœ„ì¹˜, rowëŠ” ê°€ë¡œ ìœ„ì¹˜ */
         for (genvar col = 0; col < WIDTH; col++) begin
             if (col == 0) begin
                 for (genvar row = 0; row < WIDTH; row++) begin
