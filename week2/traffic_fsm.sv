@@ -35,7 +35,6 @@ end
 
 always_comb begin
     next_state = state;  
-    
     case (state)
             NS_GREEN: 
                 if (counter == GREEN_TIME) 
