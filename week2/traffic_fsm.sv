@@ -1,7 +1,3 @@
-parameter GREEN_TIME = 40, 
-          YELLOW_TIME = 5, 
-          LEFT_TIME = 20;
-
 typedef enum logic [1:0] {
    GREEN,
    YELLOW,
@@ -23,6 +19,11 @@ module traffic_fsm (
     input wire rst_n,
     output traffic_light west, east, north, south, left
 );
+
+          
+parameter GREEN_TIME = 40, 
+          YELLOW_TIME = 5, 
+          LEFT_TIME = 20;
 
 int counter;
 
