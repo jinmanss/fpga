@@ -5,25 +5,26 @@ typedef enum logic [1:0] {
    LEFT
 } traffic_light;
 
-enum logic [2:0] {
-    NS_GREEN, 
-    NS_YELLOW, 
-    EW_LEFT, 
-    EW_YELLOW, 
-    EW_GREEN, 
-    NS_LEFT
-}state, next_state;
-
 module traffic_fsm (
     input wire clk,
     input wire rst_n,
     output traffic_light west, east, north, south, left
 );
 
-          
-parameter GREEN_TIME = 40, 
-          YELLOW_TIME = 5, 
-          LEFT_TIME = 20;
+enum logic [2:0] {
+    NS_GREEN, 
+    NS_YELLOW,
+    NS_YELLOW2, 
+    EW_LEFT, 
+    EW_YELLOW,
+    EW_YELLOW2, 
+    EW_GREEN, 
+    NS_LEFT
+}state, next_state;   
+      
+localparam GREEN_TIME = 40; 
+localparam YELLOW_TIME = 5;
+localparam LEFT_TIME = 20;
 
 int counter;
 
@@ -50,14 +51,14 @@ always_comb begin
                     next_state = EW_GREEN;
             EW_GREEN: 
                 if (counter == GREEN_TIME) 
-                    next_state = EW_YELLOW;
-            EW_YELLOW: 
+                    next_state = EW_YELLOW2;
+            EW_YELLOW2: 
                 if (counter == YELLOW_TIME) 
                     next_state = NS_LEFT;
             NS_LEFT: 
                 if (counter == LEFT_TIME) 
-                    next_state = NS_YELLOW;
-            NS_YELLOW: 
+                    next_state = NS_YELLOW2;
+            NS_YELLOW2: 
                 if (counter == YELLOW_TIME) 
                     next_state = NS_GREEN;
             default: 
@@ -67,53 +68,56 @@ end
 
 always_ff @(posedge clk or negedge rst_n)
 begin   
-    counter <= 0; 
+    north <= RED;
+    south <= RED;
+    east  <= RED;
+    west  <= RED;
+    
+    if(state  != next_state) begin
+        counter <= 0;
+    end
+    else begin    
+        counter <= counter + 1;
+    end
+    
     case(next_state)
             NS_GREEN: 
                 begin 
-                counter <= counter +1;
                 north <= GREEN;
                 south <= GREEN;
                 end
             NS_YELLOW: 
                 begin
-                counter <= counter +1;
                 north <= YELLOW;
                 south <= YELLOW;
                 end
             EW_LEFT: 
                 begin
-                counter <= counter +1;
                 east <= LEFT;
                 west <= LEFT;
                 end
             EW_YELLOW: 
                 begin
-                counter <= counter +1;
                 east <= YELLOW;
                 west <= YELLOW;
                 end
             EW_GREEN: 
                 begin
-                counter <= counter +1;
                 east <= GREEN;
                 west <= GREEN; 
                 end
-            EW_YELLOW: 
+            EW_YELLOW2: 
                 begin 
-                counter <= counter +1;
                 east <= YELLOW;
                 west <= YELLOW;
                 end
             NS_LEFT: 
                 begin
-                counter <= counter +1;
                 north <= LEFT;
                 south <= LEFT;
                 end
-            NS_YELLOW: 
+            NS_YELLOW2: 
                 begin
-                counter <= counter +1;
                 north <= YELLOW;
                 south <= YELLOW;
              end  
