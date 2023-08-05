@@ -1,19 +1,19 @@
 `timescale 1ns / 1ps 
 
 module uart_tx(
-   input clk,       //100À¸·Î 
+   input clk,       //100ìœ¼ë¡œ 
    input rst_n,
    output logic tx
 );
 
-localparam STR_LEN = 10;    //»ó¼ö·Î ÇÏ¸é ³ªÁß¿¡ Çò°¥¸± ¼ö ÀÖ´Ù 
+localparam STR_LEN = 10;    //ìƒìˆ˜ë¡œ í•˜ë©´ ë‚˜ì¤‘ì— í—·ê°ˆë¦´ ìˆ˜ ìˆë‹¤ 
 localparam BAUDRATE = 10000;  
 localparam CLK_TICKS_1SEC = 100; 
 
 logic [7:0] data;
 logic [3:0] idx_bit;
 logic [3:0] idx_byte;  
-logic [13:0] cnt_wait; // ±â´Ù¸®±â À§ÇØ¼­ »ç¿ëÇÏ´Â Ä«¿îÅÍ
+logic [13:0] cnt_wait; // ê¸°ë‹¤ë¦¬ê¸° ìœ„í•´ì„œ ì‚¬ìš©í•˜ëŠ” ì¹´ìš´í„°
 logic [STR_LEN*8-1:0] test_str = "JIN YOUNG\n";
 
 enum logic [2:0] {
@@ -33,18 +33,14 @@ end
 always_comb begin
    next_state = state;
    case(state) 
-      WAIT_1SEC:
-         
+      WAIT_1SEC:     
          if (cnt_wait == CLK_TICKS_1SEC)
-            next_state = GET_NEXT_CHAR;
-        
-      GET_NEXT_CHAR:
-      
+            next_state = GET_NEXT_CHAR;      
+      GET_NEXT_CHAR:     
              if (idx_byte == 0) 
                 next_state = WAIT_1SEC;
              else 
                 next_state = SEND_START;
-    
       SEND_START:
          next_state = SEND_DATA;
       SEND_DATA:
@@ -63,7 +59,6 @@ always_ff @(posedge clk or negedge rst_n) begin
         cnt_wait <= 0;
         tx <= 1;
     end  
-    
     else begin  
     
     case(next_state) 
@@ -72,8 +67,7 @@ always_ff @(posedge clk or negedge rst_n) begin
             begin
                 cnt_wait <= cnt_wait + 1;
                 idx_byte <= STR_LEN;
-                tx <=1;
-                
+                tx <=1;   
             end
         GET_NEXT_CHAR:
             begin
@@ -81,7 +75,6 @@ always_ff @(posedge clk or negedge rst_n) begin
                 cnt_wait <= 0;
                 idx_bit <= 0;
             end     
-        
         SEND_START:
             begin
                 tx <= 0;
@@ -95,14 +88,8 @@ always_ff @(posedge clk or negedge rst_n) begin
             begin 
                 tx <= 1;
                 idx_byte <= idx_byte -1;
-            end
-                 
-    endcase 
-    
+            end         
+        endcase 
     end
 end
-
-
-
-
 endmodule
