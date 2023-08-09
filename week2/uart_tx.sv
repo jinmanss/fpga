@@ -1,20 +1,24 @@
 `timescale 1ns / 1ps 
 
 module uart_tx(
-   input clk,       //100으로 
-   input rst_n,
+   input clk,       //100?¸·Î 
+   
    output logic tx
 );
 
-localparam STR_LEN = 10;    //상수로 하면 나중에 헷갈릴 수 있다 
+localparam STR_LEN = 10;    //»ó¼ö·Î ÇÏ¸é ³ªÁß¿¡ Çò°¥¸± ¼ö ?Ö´Ù 
 localparam BAUDRATE = 10000;  
 localparam CLK_TICKS_1SEC = 100; 
 
 logic [7:0] data;
 logic [3:0] idx_bit;
 logic [3:0] idx_byte;  
-logic [13:0] cnt_wait; // 기다리기 위해서 사용하는 카운터
+logic [13:0] cnt_wait; // ±â´Ù¸®±â ?§ÇØ¼­ »ç¿ëÇÏ´Â Ä«¿îÅÍ
 logic [STR_LEN*8-1:0] test_str = "JIN YOUNG\n";
+
+wire mclk;
+logic clk_uart;
+wire rst_n;
 
 enum logic [2:0] {
    WAIT_1SEC,
@@ -23,6 +27,51 @@ enum logic [2:0] {
    SEND_DATA,
    SEND_STOP
 }state, next_state;
+
+always_ff @(posedge mclk) begin
+    static int cnt;
+
+    if (cnt >= 50) begin
+        cnt <= 0;
+        clk_uart <= ~clk_uart;
+    end else begin
+        cnt <= cnt + 1;
+    end
+end
+
+
+
+/*********************************************
+*                 ?��브모?��
+**********************************************/
+
+/* MMCM */
+mmcm_50m mmcm (
+     .reset(1'b0)
+    ,.clk_in1(clk)
+    ,.clk_out1(mclk)
+);
+
+
+/* FPGA ?���? 로직 분석�? */
+ila_0 ila(
+     .clk       (mclk)
+    ,.probe0    (clk_uart)
+    ,.probe1    (tx)
+    ,.probe2    (data)
+    ,.probe3    (mmcm_locked)
+    ,.probe4    (idx_byte)
+    ,.probe5    (idx_bit)
+    ,.probe6    (state)
+    ,.probe7    (next_state)
+);
+
+
+/* �??�� ?��출력 */
+vio vio(
+     .clk   (mclk)
+    ,.probe_out0 (rst_n)
+);
 
 always_ff @(posedge clk or negedge rst_n) 
 begin
