@@ -2,30 +2,28 @@ module fifo(
     input logic full,
     input logic empty,
     input logic [7:0] din,
-    output logic [7:0] dout
+    output logic [7:0] dout,
+    input logic rd_clk,
+    input logic wr_clk
 );
 
+logic rst;
 logic wr_en;
 logic rd_en;
-logic rd_clk;
-logic wr_clk;
-
-logic rst;
-
 logic fifo_ready;  
 logic fifo_data_in;
 logic fifo_data_out;
 
 
 uart_rx uart_rx_inst(
-    .data(fifo_data_in)
+    .data(din)
 );
 
 fifo_generator_0 fifo (
     .full(full)
     ,.empty(empty)
-    ,.din(fifo_data_in)
-    ,.dout(fifo_data_out)
+    ,.din(din)
+    ,.dout(dout)
     ,.rd_en(rd_en)
     ,.wr_en(wr_en)
     ,.wr_clk(wr_clk)
@@ -50,5 +48,6 @@ always_ff @(posedge rd_clk) begin
         rd_en <= 1;
     end
 end
+
 
 endmodule

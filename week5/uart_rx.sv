@@ -2,10 +2,7 @@ module uart_rx(
     input clk,   
     input rst_n,    
     output logic rx,
-    output logic [7:0] data,
-    output logic rd_en,           
-    input  logic [7:0] data_out,  
-    input  logic fifo_empty       
+    output logic [7:0] data
 );
 
 localparam STR_LEN = 6;
@@ -34,7 +31,7 @@ always_comb begin
    next_state = state;
    case(state) 
       WAIT_1SEC:     
-         if (cnt_wait == CLK_TICKS_1SEC && !fifo_empty)
+         if (cnt_wait == CLK_TICKS_1SEC)
             next_state = GET_NEXT_CHAR;      
       GET_NEXT_CHAR:     
              if (idx_byte == 0) 
@@ -65,8 +62,6 @@ always_ff @(posedge clk or negedge rst_n) begin
         
         WAIT_1SEC: 
             begin
-                data <= data_out;  
-                rd_en <= 1;       
                 cnt_wait <= cnt_wait + 1;
                 idx_byte <= STR_LEN;
                 rx <=1;   
@@ -90,26 +85,8 @@ always_ff @(posedge clk or negedge rst_n) begin
             begin 
                 rx <= 1;
                 idx_byte <= idx_byte -1;
-                rd_en <= 0;
             end         
         endcase 
     end
 end
 endmodule     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
